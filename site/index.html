@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Giorgia Insalata - Artist portfolio showcasing works exploring identity, relationships and black femininity">
+    <meta name="keywords" content="art, contemporary art, artist, portraits, femininity, Italian artist">
+    <meta name="author" content="Giorgia Insalata">
+    
+    <title>INSALATA.ART | Giorgia Insalata Portfolio</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎨</text></svg>">
+</head>
+<body>
+    <!-- Site Header -->
+    <header class="site-header">
+        <div class="container header-container">
+            <h1 class="site-logo"><a href="#" class="logo-link">INSALATA.ART</a></h1>
+            
+            <nav class="main-nav">
+                <ul class="nav-list">
+                    <li><a href="#" class="nav-link" data-modal="about-modal">About</a></li>
+                    <li><a href="#" class="nav-link" id="works-link">Works</a></li>
+                    <li><a href="#" class="nav-link" data-modal="contact-modal">Contact</a></li>
+                    <li class="admin-only"><a href="#" class="nav-link" data-modal="upload-modal">Upload</a></li>
+                    <li class="admin-only"><a href="#" class="nav-link" id="signout-btn">Sign Out</a></li>
+                </ul>
+                <button class="menu-toggle" aria-label="Toggle menu">
+                    <span class="menu-bar"></span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <section class="gallery-section">
+            <div class="container">
+                <div class="gallery" id="gallery-container">
+                    <!-- Gallery items will be dynamically inserted here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; <span id="copyright-year">2023</span> INSALATA.ART • <span id="copyright-mark">©</span> All Rights Reserved</p>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <!-- Artwork Modal -->
+    <div class="modal" id="artwork-modal">
+        <div class="modal-wrapper artwork-fullscreen">
+            <button class="modal-close" aria-label="Close modal">&times;</button>
+            <button id="prev-artwork-btn" class="artwork-nav prev-artwork" aria-label="Previous artwork">&lsaquo;</button>
+            <button id="next-artwork-btn" class="artwork-nav next-artwork" aria-label="Next artwork">&rsaquo;</button>
+            
+            <!-- Just the image -->
+            <div class="artwork-fullview">
+                <img id="modal-artwork-image" src="" alt="">
+            </div>
+            
+            <!-- Info button to open details modal -->
+            <button id="artwork-details-btn" class="artwork-details-btn" aria-label="View artwork details and purchase options">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 22a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+                    <path d="M20 22a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                </svg>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Artwork Details Modal (will appear over the artwork modal) -->
+    <div class="modal details-modal" id="artwork-details-modal">
+        <div class="modal-wrapper">
+            <div class="modal-content">
+                <button class="modal-close" aria-label="Close details">&times;</button>
+                <h2 id="details-artwork-title"></h2>
+                <p id="details-artwork-description"></p>
+                
+                <div class="artwork-formats">
+                    <h3>Available Formats</h3>
+                    <div id="details-format-options">
+                        <!-- Format options will be added here -->
+                    </div>
+                </div>
+                
+                <div class="admin-controls admin-only">
+                    <button id="edit-artwork-btn" class="btn btn-outline">Edit</button>
+                    <button id="delete-artwork-btn" class="btn btn-danger">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Modal -->
+    <div class="modal" id="about-modal">
+        <div class="modal-wrapper">
+            <div class="modal-content about-modal">
+                <button class="modal-close" aria-label="Close modal">&times;</button>
+                <div class="about-content">
+                    <h2>Giorgia Insalata</h2>
+                    <div id="about-text">
+                        <p>Giorgia is a self taught London born artist with Italian and Zimbabwean heritage.</p>
+                        <p>Her art focuses on identity, relationships and black femininity explored through portraiture. The main theme of her work is the re-contextualisation of classical and allegorical figures that portray the modern day black female experience, using colour and symbolism.</p>
+                        <p>The Artist is interested in exploring the common experience of black women in Europe and infusing them with Greek mythology and biblical references.</p>
+                        <p>These works seek to represent through the lenses of classical paintings. Her main inspiration is taken from her life in boarding schools around England and growing up as a young Italian woman of colour in both London and Italy.</p>
+                    </div>
+                    <button id="edit-about-btn" class="btn btn-outline admin-only">Edit About</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Modal -->
+    <div class="modal" id="contact-modal">
+        <div class="modal-wrapper">
+            <div class="modal-content">
+                <button class="modal-close" aria-label="Close modal">&times;</button>
+                <h2>Contact</h2>
+                <form id="contact-form" class="form">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" rows="6" required></textarea>
+                    </div>
+                    
+                    <input type="hidden" id="artwork-info" name="artworkInfo">
+                    
+                    <button type="submit" class="btn btn-primary">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sign In Modal -->
+    <div class="modal" id="signin-modal">
+        <div class="modal-wrapper">
+            <div class="modal-content">
+                <button class="modal-close" aria-label="Close modal">&times;</button>
+                <h2>Admin Sign In</h2>
+                <form id="signin-form" class="form">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Sign In</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Artwork Modal -->
+    <div class="modal" id="upload-modal">
+        <div class="modal-wrapper">
+            <div class="modal-content upload-modal">
+                <button class="modal-close" aria-label="Close modal">&times;</button>
+                <h2>Upload New Artwork</h2>
+                <form id="upload-form" class="form" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="artwork-title">Title</label>
+                        <input type="text" id="artwork-title" name="title" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="artwork-description">Description</label>
+                        <textarea id="artwork-description" name="description" rows="4"></textarea>
+                    </div>
+                    
+                    <div class="form-group artwork-upload">
+                        <label for="artwork-image">Artwork Image</label>
+                        <input type="file" id="artwork-image" name="artwork" accept="image/*" required>
+                        <div class="image-preview" id="artwork-preview"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="is-original-for-sale" name="isOriginalForSale">
+                            <span>Original Artwork Available for Purchase</span>
+                        </label>
+                    </div>
+                    
+                    <div class="formats-section">
+                        <!-- Dynamic format fields will be added here by JavaScript -->
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Upload Artwork</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Edit About Modal -->
+    <div class="modal" id="edit-about-modal">
+        <div class="modal-wrapper">
+            <div class="modal-content">
+                <button class="modal-close" aria-label="Close modal">&times;</button>
+                <h2>Edit About Content</h2>
+                <form id="edit-about-form" class="form">
+                    <div class="form-group">
+                        <label for="about-content">About Content</label>
+                        <textarea id="about-content" name="aboutContent" rows="12"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Edit Artwork Modal -->
+    <div class="modal" id="edit-artwork-modal">
+        <div class="modal-wrapper">
+            <div class="modal-content upload-modal">
+                <button class="modal-close" aria-label="Close modal">&times;</button>
+                <h2>Edit Artwork</h2>
+                <form id="edit-artwork-form" class="form">
+                    <!-- Will be populated dynamically with the same fields as the upload form -->
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <div class="toast-content">
+            <span id="toast-message"></span>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="spinner-overlay" id="spinner">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- ImagesLoaded library -->
+    <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="scripts.js"></script>
+</body>
+</html>

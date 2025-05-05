@@ -1,0 +1,44 @@
+# Dependency directories
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Logs
+logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Uploaded content
+site/image/*.jpg
+site/image/*.jpeg
+site/image/*.png
+site/image/*.gif
+site/image/*.webp
+site/image/*.svg
+site/image/*.ico
+
+# Temp directory
+site/temp/
+.temp
+.tmp
+
+# Distribution / build files
+/dist
+/build
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo 
