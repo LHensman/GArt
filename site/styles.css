@@ -577,6 +577,7 @@ body.admin-mode .admin-only:not(button):not(.btn) {
   border-radius: var(--border-radius);
   background-color: var(--color-gray-100);
   transition: background-color var(--transition);
+  gap: var(--spacing-md);
 }
 
 .format-option:hover {
@@ -587,9 +588,28 @@ body.admin-mode .admin-only:not(button):not(.btn) {
   background-color: rgba(214, 48, 49, 0.1);
 }
 
+/* Format thumbnail styles */
+.format-thumbnail {
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+  border-radius: var(--border-radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--color-gray-200);
+  background-color: var(--color-white);
+}
+
+.format-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .format-info {
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
 }
 
 .format-name {
@@ -910,6 +930,20 @@ textarea {
   }
   
   .form-actions .btn {
+    width: 100%;
+  }
+
+  .format-option {
+    flex-wrap: wrap;
+  }
+  
+  .format-thumbnail {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .format-option .btn {
+    margin-top: var(--spacing-sm);
     width: 100%;
   }
 }

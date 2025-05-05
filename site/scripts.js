@@ -398,7 +398,7 @@ function populateEditArtworkForm(form, artwork) {
     // Convert object-based formats to array for easier handling
     const formatsArray = [];
     
-    // Handle existing object-based formats
+    // Handle existing formats
     Object.entries(artwork.formats).forEach(([formatType, details]) => {
       if (details && details.available) {
         formatsArray.push({
@@ -429,12 +429,12 @@ function populateEditArtworkForm(form, artwork) {
   
   form.appendChild(formatsSection);
   
-  // Add hidden ID field for identifying the artwork
-  const idField = document.createElement('input');
-  idField.type = 'hidden';
-  idField.name = 'id';
-  idField.value = artwork.image || '';
-  form.appendChild(idField);
+  // Add hidden path field for identifying the artwork - using filepath instead of ID
+  const pathField = document.createElement('input');
+  pathField.type = 'hidden';
+  pathField.name = 'artworkPath';
+  pathField.value = artwork.image || '';
+  form.appendChild(pathField);
   
   // Add submit button
   const formActions = document.createElement('div');
@@ -456,6 +456,8 @@ function addFormatField(container, format, index) {
   formatField.className = 'format-field';
   formatField.setAttribute('data-index', index);
   
+  const hasImage = format.image ? true : false;
+  
   formatField.innerHTML = `
     <div class="format-field-header">
       <div class="form-group format-type">
@@ -468,10 +470,18 @@ function addFormatField(container, format, index) {
       </div>
       <button type="button" class="btn btn-danger remove-format-btn" aria-label="Remove format">×</button>
     </div>
-    <div class="form-group">
+    <div class="form-group format-image-group">
       <label for="format-image-${index}">Format Image (Optional)</label>
       <input type="file" id="format-image-${index}" name="format-image-${index}" accept="image/*">
-      <div class="image-preview" id="format-preview-${index}"></div>
+      <div class="image-preview" id="format-preview-${index}">
+        ${hasImage ? `<img src="image/${format.image}" alt="Format preview">` : 'No image selected'}
+      </div>
+      ${hasImage ? `
+        <div class="image-actions">
+          <button type="button" class="btn btn-danger btn-sm remove-image-btn" data-index="${index}">Remove Image</button>
+          <input type="hidden" name="format-image-remove-${index}" id="format-image-remove-${index}" value="false">
+        </div>
+      ` : ''}
     </div>
   `;
   
@@ -487,6 +497,26 @@ function addFormatField(container, format, index) {
       updateFormatFieldIds(field, i);
     });
   });
+  
+  // Add event listener to remove image button if present
+  const removeImageBtn = formatField.querySelector('.remove-image-btn');
+  if (removeImageBtn) {
+    removeImageBtn.addEventListener('click', () => {
+      const formatIndex = removeImageBtn.getAttribute('data-index');
+      const removeFlag = formatField.querySelector(`#format-image-remove-${formatIndex}`);
+      const preview = formatField.querySelector(`#format-preview-${formatIndex}`);
+      
+      // Set the hidden flag to true
+      removeFlag.value = 'true';
+      
+      // Update the preview
+      preview.innerHTML = 'Image will be removed';
+      preview.style.color = 'red';
+      
+      // Hide the remove button
+      removeImageBtn.style.display = 'none';
+    });
+  }
   
   // Set up image preview for this format field
   setupImagePreview(formatField.querySelector(`#format-image-${index}`), formatField.querySelector(`#format-preview-${index}`));
@@ -510,7 +540,7 @@ function updateFormatFieldIds(field, newIndex) {
   priceInput.name = `format-price-${newIndex}`;
   priceInput.labels[0].setAttribute('for', `format-price-${newIndex}`);
   
-  // Update image input
+  // Update image input and preview
   const imageInput = field.querySelector('[id^="format-image-"]');
   if (imageInput) {
     imageInput.id = `format-image-${newIndex}`;
@@ -522,6 +552,18 @@ function updateFormatFieldIds(field, newIndex) {
     if (imagePreview) {
       imagePreview.id = `format-preview-${newIndex}`;
     }
+    
+    // Update remove image button and flag if present
+    const removeImageBtn = field.querySelector('.remove-image-btn');
+    if (removeImageBtn) {
+      removeImageBtn.setAttribute('data-index', newIndex);
+      
+      const removeFlag = field.querySelector('[id^="format-image-remove-"]');
+      if (removeFlag) {
+        removeFlag.id = `format-image-remove-${newIndex}`;
+        removeFlag.name = `format-image-remove-${newIndex}`;
+      }
+    }
   }
 }
 
@@ -530,57 +572,68 @@ function updateFormatFieldIds(field, newIndex) {
  */
 function handleEditArtworkSubmit(e) {
   e.preventDefault();
-  
-  // Show loading indicator
   showSpinner();
   
-  // For edit we'll use JSON since the server's /api/update-artwork endpoint doesn't handle files properly
-  const formData = new FormData(e.target);
-  const artworkId = formData.get('id');
+  // Create a FormData object for file uploads
+  const formData = new FormData();
   
-  // Build formats object from dynamic format fields
-  const formats = {};
+  // Add the artwork path
+  const artworkPath = e.target.querySelector('input[name="artworkPath"]').value;
+  formData.append('artworkPath', artworkPath);
+  
+  // Add basic fields
+  formData.append('title', e.target.querySelector('#edit-artwork-title').value || '');
+  formData.append('description', e.target.querySelector('#edit-artwork-description').value || '');
+  formData.append('isOriginalForSale', e.target.querySelector('#edit-is-original-for-sale').checked);
+  
+  // Process formats
   const formatFields = e.target.querySelectorAll('.format-field');
+  const formats = {};
   
   formatFields.forEach((field, index) => {
-    const formatType = formData.get(`format-type-${index}`);
-    const formatPrice = formData.get(`format-price-${index}`);
+    const formatType = field.querySelector(`[id^="format-type-"]`).value;
+    const formatPrice = field.querySelector(`[id^="format-price-"]`).value;
     
     if (formatType) {
+      // Create base format object
       formats[formatType] = {
         price: parseFloat(formatPrice) || null,
         available: true
       };
+      
+      // Check if we should remove an existing image
+      const removeImageFlag = field.querySelector(`[id^="format-image-remove-"]`);
+      if (removeImageFlag && removeImageFlag.value === 'true') {
+        // Signal to server to remove this image
+        formats[formatType].image = null;
+      }
+      
+      // Check if there's a new image to upload
+      const formatImageInput = field.querySelector(`[id^="format-image-"]`);
+      if (formatImageInput && formatImageInput.files && formatImageInput.files[0]) {
+        // Add the file to FormData with a field name pattern: formatName_image
+        formData.append(`${formatType}_image`, formatImageInput.files[0]);
+      }
     }
   });
   
-  // Create update payload as JSON (no file uploads for now)
-  const updateData = {
-    id: artworkId,
-    title: formData.get('title'),
-    description: formData.get('description'),
-    isOriginalForSale: formData.get('isOriginalForSale') === 'on',
-    formats: formats
-  };
+  // Add formats JSON to FormData
+  formData.append('formats', JSON.stringify(formats));
   
   // Send update to server
   fetch('/api/update-artwork', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(updateData)
+    body: formData
   })
   .then(response => response.json())
   .then(data => {
     hideSpinner();
     
     if (data.success) {
-      // Hide the edit modal
       hideModal(document.getElementById('edit-artwork-modal'));
-      
-      // Show success message
       showToast('Artwork updated successfully', 'success');
       
-      // Wait a moment for the toast to be visible, then refresh the entire page
+      // Reload the page to see changes
       setTimeout(() => {
         window.location.reload();
       }, 1000);
@@ -615,7 +668,7 @@ function handleDeleteArtwork() {
   fetch('/api/delete-artwork', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id: artworkData.image })
+    body: JSON.stringify({ path: artworkData.image })
   })
   .then(response => response.json())
   .then(data => {
@@ -912,59 +965,82 @@ function handleSignin(e) {
  */
 function handleUploadArtwork(e) {
   e.preventDefault();
+  showSpinner();
   
-  // Create a FormData object to handle file uploads
-  const formData = new FormData(e.target);
+  // Create a FormData object with the main artwork
+  const formData = new FormData();
   
-  // Get all format fields
+  // Get the main artwork file
+  const artworkInput = e.target.querySelector('#artwork-image');
+  if (artworkInput && artworkInput.files && artworkInput.files[0]) {
+    formData.append('artwork', artworkInput.files[0]);
+  } else {
+    hideSpinner();
+    showToast('Please select a main artwork image', 'error');
+    return;
+  }
+  
+  // Add basic fields
+  formData.append('title', e.target.querySelector('#artwork-title').value || 'Untitled');
+  formData.append('description', e.target.querySelector('#artwork-description').value || '');
+  formData.append('isOriginalForSale', e.target.querySelector('#is-original-for-sale').checked);
+  
+  // Process formats
   const formatFields = e.target.querySelectorAll('.format-field');
   const formats = {};
   
-  // Process each format field
   formatFields.forEach((field, index) => {
-    const formatType = formData.get(`format-type-${index}`);
-    const formatPrice = formData.get(`format-price-${index}`);
+    const formatTypeInput = field.querySelector(`[id^="format-type-"]`);
+    const formatPriceInput = field.querySelector(`[id^="format-price-"]`);
+    
+    if (!formatTypeInput || !formatPriceInput) return;
+    
+    const formatType = formatTypeInput.value;
+    const formatPrice = formatPriceInput.value;
     
     if (formatType) {
-      // Only add recognized formats that the server already handles
-      if (['digital', 'print', 'sticker'].includes(formatType.toLowerCase())) {
-        const normalizedType = formatType.toLowerCase();
-        formats[normalizedType] = {
-          price: parseFloat(formatPrice) || null,
-          available: true
-        };
-        
-        // If there's an image file for this format, add it to FormData with expected name
-        const formatImageInput = field.querySelector(`#format-image-${index}`);
-        if (formatImageInput && formatImageInput.files && formatImageInput.files[0]) {
-          // Remove the original field from formData to avoid duplication
-          formData.delete(`format-image-${index}`);
-          
-          // Add with the fixed name that server expects (digitalImage, printImage, stickerImage)
-          formData.append(`${normalizedType}Image`, formatImageInput.files[0]);
-        }
-      } else {
-        // For custom format types (not recognized by server yet), still add to formats 
-        // but we can't upload images for them until server is updated
-        formats[formatType] = {
-          price: parseFloat(formatPrice) || null,
-          available: true
-        };
+      // Add to the formats object
+      formats[formatType] = {
+        price: parseFloat(formatPrice) || null,
+        available: true
+      };
+      
+      // Handle any image file for this format
+      const formatImageInput = field.querySelector(`[id^="format-image-"]`);
+      if (formatImageInput && formatImageInput.files && formatImageInput.files[0]) {
+        // Add the file with a consistent naming pattern: formatName_image
+        formData.append(`${formatType}_image`, formatImageInput.files[0]);
       }
     }
   });
   
-  // Add formats to the FormData
+  // Debug: Log the formats object to inspect it
+  console.log('Formats object:', formats);
+  
+  // Add formats as JSON string
   formData.append('formats', JSON.stringify(formats));
   
-  showSpinner();
+  // Debug: Log all FormData entries
+  console.log('FormData entries:');
+  for (let pair of formData.entries()) {
+    console.log(pair[0], pair[1] instanceof File ? `(File: ${pair[1].name})` : pair[1]);
+  }
   
   // Send the upload request to the server
   fetch('/api/upload', {
     method: 'POST',
     body: formData
   })
-  .then(response => response.json())
+  .then(response => {
+    if (!response.ok) {
+      console.error('Upload failed with status:', response.status);
+      return response.json().then(data => {
+        console.error('Server error details:', data);
+        return data;
+      });
+    }
+    return response.json();
+  })
   .then(data => {
     hideSpinner();
     
@@ -980,7 +1056,9 @@ function handleUploadArtwork(e) {
       clearImagePreviews(e.target);
       
       // Refresh the gallery
-      initGallery();
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } else {
       showToast(`Upload failed: ${data.message}`, 'error');
     }
@@ -1320,12 +1398,20 @@ function addFormatOption(container, artwork, format, details) {
   const formatName = format.charAt(0).toUpperCase() + format.slice(1);
   const price = details.price ? `£${parseFloat(details.price).toFixed(2)}` : 'Price on request';
   
+  // Check if this format has an image
+  const hasImage = details.image ? true : false;
+  const thumbnailHtml = hasImage ? 
+    `<div class="format-thumbnail">
+      <img src="image/${details.image}" alt="${formatName} preview" loading="lazy">
+     </div>` : '';
+  
   option.innerHTML = `
+      ${thumbnailHtml}
       <div class="format-info">
           <div class="format-name">${formatName}</div>
           <div class="format-price">${price}</div>
       </div>
-    <button class="btn btn-primary" data-format="${format}">Purchase</button>
+      <button class="btn btn-primary" data-format="${format}">Purchase</button>
   `;
   
   // Add click event to purchase button
