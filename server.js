@@ -432,6 +432,60 @@ app.post('/api/delete-artwork', (req, res) => {
   }
 });
 
+// Checkout endpoint for Stripe payments
+app.post('/api/create-checkout-session', (req, res) => {
+  // This is a placeholder endpoint for Stripe checkout
+  // You'll need to install the Stripe SDK and configure it with your keys
+  // npm install stripe
+
+  try {
+    // Placeholder for Stripe integration
+    // In a real implementation, you would:
+    // 1. Initialize Stripe with your API key: const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+    // 2. Create line items from the cart items
+    // 3. Create a checkout session with those line items
+    // 4. Return the session URL
+
+    // For now, return a message explaining how to set up Stripe
+    res.status(501).json({
+      success: false,
+      message: 'Stripe checkout not implemented yet. See server.js for instructions.'
+    });
+
+    /* 
+    // EXAMPLE IMPLEMENTATION (commented out until Stripe is installed)
+    
+    const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+    const items = req.body.items;   
+    const line_items = items.map(i => ({
+      price_data: {
+        currency: 'gbp',
+        product_data: { name: `${i.artworkTitle} (${i.format})` },
+        unit_amount: Math.round(i.price * 100)   // pence
+      },
+      quantity: i.qty
+    }));
+
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      mode: 'payment',
+      line_items,
+      success_url: `${req.headers.origin}/success.html`,
+      cancel_url: `${req.headers.origin}/cart.html`
+    });
+    
+    res.json({ url: session.url });
+    */
+
+  } catch (error) {
+    console.error('Checkout error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error: ' + error.message
+    });
+  }
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Server error:', err.stack);

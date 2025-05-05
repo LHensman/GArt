@@ -33,6 +33,16 @@
                     <li><a href="#" class="nav-link" data-modal="contact-modal">Contact</a></li>
                     <li class="admin-only"><a href="#" class="nav-link" data-modal="upload-modal">Upload</a></li>
                     <li class="admin-only"><a href="#" class="nav-link" id="signout-btn">Sign Out</a></li>
+                    <li>
+                        <a href="#" class="nav-link cart-link" id="cart-link" onclick="showCart(); return false;">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 22a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+                                <path d="M20 22a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                            </svg>
+                            <span id="cart-count" class="cart-count">0</span>
+                        </a>
+                    </li>
                 </ul>
                 <button class="menu-toggle" aria-label="Toggle menu">
                     <span class="menu-bar"></span>
@@ -101,6 +111,42 @@
                 <div class="admin-controls admin-only">
                     <button id="edit-artwork-btn" class="btn btn-outline">Edit</button>
                     <button id="delete-artwork-btn" class="btn btn-danger">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div class="modal" id="cart-modal">
+        <div class="modal-wrapper">
+            <div class="modal-content cart-modal">
+                <button class="modal-close" aria-label="Close modal">&times;</button>
+                <h2>Shopping Cart</h2>
+                
+                <div id="empty-cart-message">
+                    <p>Your cart is empty.</p>
+                </div>
+                
+                <div id="cart-content-section">
+                    <div class="cart-items-wrapper">
+                        <div class="cart-header">
+                            <div class="cart-header-item">Item</div>
+                            <div class="cart-header-quantity">Quantity</div>
+                            <div class="cart-header-price">Total</div>
+                            <div class="cart-header-remove"></div>
+                        </div>
+                        <div id="cart-items">
+                            <!-- Cart items will be added here -->
+                        </div>
+                    </div>
+                    
+                    <div class="cart-summary">
+                        <div class="cart-total-section">
+                            <span class="cart-total-label">Total:</span>
+                            <span class="cart-total-amount" id="cart-total">£0.00</span>
+                        </div>
+                        <button id="checkout-btn" class="btn btn-primary" onclick="proceedToCheckout()">Checkout</button>
+                    </div>
                 </div>
             </div>
         </div>
