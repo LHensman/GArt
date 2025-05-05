@@ -27,6 +27,7 @@ site/image/*.gif
 site/image/*.webp
 site/image/*.svg
 site/image/*.ico
+site/image/works.json
 
 # Temp directory
 site/temp/
@@ -42,3 +43,4 @@ site/temp/
 .vscode/
 *.swp
 *.swo 
+
