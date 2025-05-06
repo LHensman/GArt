@@ -15,5 +15,31 @@
         "available": true
       }
     }
+  },
+  {
+    "title": "new test",
+    "image": "1746527002750-325945081_138790892368660_3427883593794877941_n.jpg",
+    "description": "mmhmm",
+    "isOriginalForSale": false,
+    "formats": {
+      "Mug": {
+        "price": 50,
+        "available": true,
+        "image": "1746527002752-314409664_136579375824666_814963980919763709_n.jpg"
+      }
+    }
+  },
+  {
+    "title": "we567890-",
+    "image": "1746527887684-402317780_18318891520110611_6375740382720607406_n.jpg",
+    "description": "axsefrgd65ut7iy8o",
+    "isOriginalForSale": true,
+    "formats": {
+      "scarf": {
+        "price": 45743,
+        "available": true,
+        "image": "1746527887687-314409664_136579375824666_814963980919763709_n.jpg"
+      }
+    }
   }
 ]

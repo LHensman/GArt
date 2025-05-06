@@ -2,12 +2,11 @@
  * INSALATA.ART - Server
  * Express server for the artist portfolio site
  */
-
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
-
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -25,7 +24,7 @@ app.post('/api/signin', (req, res) => {
   const { username, password } = req.body;
   
   // In a production environment, you would use proper authentication
-  // with encrypted passwords, sessions, etc.
+  // with encrypted passwords, sessions, etc.yy
   const validCredentials = username === 'admin' && password === 'admin';
   
   if (validCredentials) {
@@ -433,7 +432,7 @@ app.post('/api/delete-artwork', (req, res) => {
 });
 
 // Checkout endpoint for Stripe payments
-app.post('/api/create-checkout-session', (req, res) => {
+app.post('/api/create-checkout-session', async (req, res) => {
   // This is a placeholder endpoint for Stripe checkout
   // You'll need to install the Stripe SDK and configure it with your keys
   // npm install stripe
@@ -447,12 +446,12 @@ app.post('/api/create-checkout-session', (req, res) => {
     // 4. Return the session URL
 
     // For now, return a message explaining how to set up Stripe
-    res.status(501).json({
-      success: false,
-      message: 'Stripe checkout not implemented yet. See server.js for instructions.'
-    });
+    // res.status(501).json({
+    //   success: false,
+    //   message: 'Stripe checkout not implemented yet. See server.js for instructions.'
+    // });
 
-    /* 
+     
     // EXAMPLE IMPLEMENTATION (commented out until Stripe is installed)
     
     const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
@@ -475,7 +474,7 @@ app.post('/api/create-checkout-session', (req, res) => {
     });
     
     res.json({ url: session.url });
-    */
+    
 
   } catch (error) {
     console.error('Checkout error:', error);
