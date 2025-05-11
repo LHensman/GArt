@@ -1420,7 +1420,8 @@ function addFormatOption(container, artwork, format, details) {
   // Add click event to button
   const actionBtn = option.querySelector('[data-format]');
   actionBtn.addEventListener('click', () => {
-    addToCart(artwork, formatName, details.price);
+    // Pass the format image if it exists
+    addToCart(artwork, formatName, details.price, details.image || null);
     showToast(`${formatName} added to cart`, 'success');
   });
   
@@ -1470,7 +1471,7 @@ function openContactForm(artwork, format, price) {
 /**
  * Add an item to the cart
  */
-function addToCart(artwork, format, price) {
+function addToCart(artwork, format, price, formatImage = null) {
   const cart = getCart();
   
   // Create cart item
@@ -1479,7 +1480,8 @@ function addToCart(artwork, format, price) {
     artworkImage: artwork.image,
     format: format,
     price: parseFloat(price) || 0,
-    qty: 1
+    qty: 1,
+    formatImage: formatImage
   };
   
   // Check if item already exists in cart
@@ -1685,12 +1687,22 @@ function proceedToCheckout() {
     return;
   }
   
+  // Add full image URLs to cart items for checkout
+  const cartWithUrls = cart.map(item => {
+    // Use format-specific image if available, otherwise use main artwork image
+    const imageToUse = item.formatImage || item.artworkImage;
+    return {
+      ...item,
+      imageUrl: window.location.origin + '/image/' + imageToUse
+    };
+  });
+  
   showSpinner();
   
   fetch('/api/create-checkout-session', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ items: cart })
+    body: JSON.stringify({ items: cartWithUrls })
   })
   .then(response => response.json())
   .then(data => {

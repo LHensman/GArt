@@ -1,1 +1,27 @@
-[]
+[
+  {
+    "title": "Hi",
+    "image": "1746894424671-image_2025-05-10_172653033.png",
+    "description": "gtrege",
+    "isOriginalForSale": true,
+    "formats": {
+      "213": {
+        "price": 321,
+        "available": true
+      }
+    }
+  },
+  {
+    "title": "hmm",
+    "image": "1746895248892-image_2025-05-10_174037351.png",
+    "description": "",
+    "isOriginalForSale": false,
+    "formats": {
+      "Test": {
+        "price": 99,
+        "available": true,
+        "image": "1746895248893-image_2025-05-10_174044828.png"
+      }
+    }
+  }
+]
